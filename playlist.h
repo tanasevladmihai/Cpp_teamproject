@@ -1,36 +1,52 @@
-// playlist.h
 #ifndef PLAYLIST_H
 #define PLAYLIST_H
-#define COLOR_RED "\033[1;31m"
-#define COLOR_GREEN "\033[1;32m"
-#define COLOR_YELLOW "\033[1;33m"
-#define COLOR_CYAN "\033[1;36m"
-#define COLOR_RESET "\033[0m"
 
-typedef struct SongNode
-{
-    char title[100];
-    char artist[100];
-    struct SongNode *next;
-} SongNode;
+#include <string>
+#include <vector>
 
-typedef struct Playlist
-{
-    char name[100];
+const std::string COLOR_RED = "\033[1;31m";
+const std::string COLOR_GREEN = "\033[1;32m";
+const std::string COLOR_YELLOW = "\033[1;33m";
+const std::string COLOR_CYAN = "\033[1;36m";
+const std::string COLOR_RESET = "\033[0m";
+
+class Song {
+public:
+    std::string title;
+    std::string artist;
+
+    Song(const std::string& t, const std::string& a) : title(t), artist(a) {}
+};
+
+class Playlist {
+public:
+    std::string name;
     float rating;
-    SongNode* songs;
-} Playlist;
+    std::vector<Song> songs;
 
-typedef struct PlaylistNode
-{
-    Playlist playlist;
-    struct PlaylistNode *next;
-} PlaylistNode;
+    Playlist(const std::string& n, float r) : name(n), rating(r) {}
 
-extern PlaylistNode* playlist_head;
+    void add_song();
+    void remove_song();
+    void view_songs() const;
+};
 
-void menu_clear(void);
-void load_playlists_from_file(const char* filename);
-void save_playlists_to_file(const char* filename);
+class PlaylistManager {
+private:
+    std::vector<Playlist> playlists;
 
-#endif //PLAYLIST_H
+    bool playlist_exists(const std::string& name) const;
+    Playlist* select_playlist();
+
+public:
+    void load_from_file(const std::string& filename);
+    void save_to_file(const std::string& filename);
+    void create_playlist();
+    void view_playlists() const;
+    void delete_playlist();
+    void manage_playlist();
+};
+
+void menu_clear();
+
+#endif // PLAYLIST_H
